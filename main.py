@@ -18,12 +18,37 @@ class MainWindow(QMainWindow):
 
     self.show_all_cars()
     self.btn_add.clicked.connect(self.insert_car)
+    self.btn_clear.clicked.connect(self.clear_text)
+    self.tb_car.cellClicked.connect(self.selected_row)
 
   def clear_text(self):
     self.txt_brand.setText('')
     self.txt_model.setText('')
     self.txt_year.setText('')
     self.txt_price.setText('')
+
+    self.btn_add.setEnabled(True)
+    self.btn_update.setEnabled(False)
+    self.btn_delete.setEnabled(False)
+    
+    self.tb_car.clearSelection()
+
+  def selected_row(self):
+    row = self.tb_car.currentRow()
+    self.id = self.tb_car.item(row, 0).text()
+    brand = self.tb_car.item(row, 1).text()
+    model = self.tb_car.item(row, 2).text()
+    year = self.tb_car.item(row, 3).text()
+    price = self.tb_car.item(row, 4).text()
+
+    self.txt_brand.setText(brand)
+    self.txt_model.setText(model)
+    self.txt_year.setText(year)
+    self.txt_price.setText(price)
+
+    self.btn_add.setEnabled(False)
+    self.btn_delete.setEnabled(True)
+    self.btn_update.setEnabled(True)
 
   def show_all_cars(self):
     sql = 'select * from car'
@@ -61,6 +86,19 @@ class MainWindow(QMainWindow):
     else:
       QMessageBox.warning(self, 'Warning', 'Unable to insert car!')
 
+    self.show_all_cars()
+    self.clear_text()
+
+  def delete_car(self):
+    sql = 'delete from car where id = ?'
+    values = (int(self.id), )
+
+    rs = cursor.execute(sql, values)
+    db.commit()
+    if rs.rowcount>0:
+      QMessageBox.information(self, 'Informaition', 'Delete car successful!')
+    else:
+      QMessageBox.information(self, 'Informaition', 'Unable to delete car!')
     self.show_all_cars()
     self.clear_text()
 

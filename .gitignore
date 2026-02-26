@@ -8,4 +8,4 @@ wheels/
 
 # Virtual environments
 .venv
-*.sqlite
+car_db.sqlite
